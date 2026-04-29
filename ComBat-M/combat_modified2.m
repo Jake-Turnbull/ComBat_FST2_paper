@@ -1,4 +1,4 @@
-function [bayesdata,delta_star,gamma_star,t2,gamma_hat,delta_hat,a_prior,b_prior] = combat_modified(dat, batch, mod, parametric, NameValueArgs)
+function [bayesdata,delta_star,gamma_star,t2,gamma_hat,delta_hat,a_prior,b_prior,priors] = combat_modified2(dat, batch, mod, parametric, NameValueArgs)
     
     % COMBAT_FULL_FUNCTIONALITY: Extended ComBat with optional reference batch
     % and empirical Bayes toggle, covariate regression and shrinkage
@@ -20,6 +20,8 @@ function [bayesdata,delta_star,gamma_star,t2,gamma_hat,delta_hat,a_prior,b_prior
     %   ReferenceBatch: Call as ReferenceBatch = int
     %   Defaults to no refrence batch if not given
     %
+    %   UseGAMs: call as UseGAMS = True/False
+    %   Defaults to not using GAM if argument not passed
     %
     %
     %
@@ -38,6 +40,7 @@ function [bayesdata,delta_star,gamma_star,t2,gamma_hat,delta_hat,a_prior,b_prior
         NameValueArgs.DeltaCorrection = true
         NameValueArgs.UseEB = true
         NameValueArgs.ReferenceBatch = []
+        NameValueArgs.UseGAMs = false
         NameValueArgs.RegressCovariates = false
         NameValueArgs.GammaCorrection = true
     end
@@ -45,6 +48,7 @@ function [bayesdata,delta_star,gamma_star,t2,gamma_hat,delta_hat,a_prior,b_prior
     DeltaCorrection = NameValueArgs.DeltaCorrection;
     UseEB = NameValueArgs.UseEB;
     ReferenceBatch = NameValueArgs.ReferenceBatch;
+    UseGAMs = NameValueArgs.UseGAMs;
     RegressCovariates = NameValueArgs.RegressCovariates;
     GammaCorrection = NameValueArgs.GammaCorrection;
     
@@ -62,6 +66,11 @@ function [bayesdata,delta_star,gamma_star,t2,gamma_hat,delta_hat,a_prior,b_prior
         disp('Empirical Bayes set to true')
     end
     
+    % Placeholder for eventual GAMs implementation
+    if UseGAMs == true
+        disp('GAMs set to true, using a generalised additive model on continuous covariates')
+        disp('GAMs not yet implemented into code, this call serves as helper function')
+    end
     
     % Check if covariate effects are to be added back in
     if RegressCovariates == true
@@ -376,5 +385,13 @@ end
         % Else, follow normal ComBat logic
         bayesdata = (bayesdata .* (sqrt(var_pooled) * repmat(1, 1, n_array))) + stand_mean;
     end
+    priors = struct();
+    priors.levels     = levels;
+    priors.gamma_bar  = gamma_bar;
+    priors.t2         = t2;
+    priors.a_prior    = a_prior;
+    priors.b_prior    = b_prior;
+    priors.gamma_hat  = gamma_hat;
+    priors.delta_hat  = delta_hat;
     
 end
